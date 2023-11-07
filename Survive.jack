@@ -1,0 +1,125 @@
+/*
+This program has some similarities to the old square game
+I have added a second Square that is the pursuer
+A chase function in which the pursuer tries to match players coordinates
+A forced increase in size when moving to make it easier to lose
+Game over when squares touch
+Failure check placed in the move player function 
+*/
+
+class Survive {
+   field Square player;
+   field Square pursuer;
+   field int direction; 
+
+   constructor Survive new() {
+      let pursuer = Square.new(200, 200, 10);
+      let player = Square.new(0, 0, 10);
+      let direction = 0; 
+      return this;
+   }
+
+   method void dispose() {
+      do player.dispose();
+      do pursuer.dispose();
+      do Memory.deAlloc(this);
+      return;
+   }
+
+   method boolean movePlayer() {
+      var boolean failCheck;
+      let failCheck = checkFailure();
+      if(failCheck){
+         return true;
+      }
+      if (direction = 1) { do player.moveUp(); }
+      if (direction = 2) { do player.moveDown(); }
+      if (direction = 3) { do player.moveLeft(); }
+      if (direction = 4) { do player.moveRight(); }
+      do Sys.wait(5); 
+      return false;
+   }
+
+   method boolean checkFailure(){
+      var int xMin;
+      var int xMax;
+      var int yMin;
+      var int yMax;
+      var int playerY;
+      var int pursuerX;
+      var int pursuerY;
+      var int playerSize;
+      var int pursuerSize;
+      let xMin = player.getX();
+      let xMax = player.getX() + player.getSize();
+      let yMin = player.getY();
+      let yMax = player.getY() + player.getSize();
+      let pursuerX = pursuer.getX();
+      let pursuerY = pursuer.getY();
+
+
+      if((pursuerX > xMin | pursuerX = xMin) & (pursuerY > yMin | pursuerY = yMin) & (pursuerX < xMax) & (pursuerY < yMax)){
+         do Output.printString("GAME OVER!");
+         do Sys.halt();
+         return true;
+      }
+      return false;
+   }
+
+   method void chase(){
+      var int playerX;
+      var int playerY;
+      var int pursuerX;
+      var int pursuerY;
+      let playerX = player.getX();
+      let pursuerX = pursuer.getX();
+      let playerY = player.getY();
+      let pursuerY = pursuer.getY();
+
+      if(playerX > pursuerX){
+         do pursuer.moveDown();
+         return;
+      }
+      if (playerX < pursuerX){
+         do pursuer.moveUp();
+         return;
+      }
+      if(playerY > pursuerY){
+         do pursuer.moveRight();
+         return;
+      }
+      else {
+         do pursuer.moveLeft();
+      }
+      return;
+   }
+
+   method void run() {
+      var char key; 
+      var boolean exit;
+      let exit = false;
+      
+      while (~exit) {
+         while (key = 0) {
+            let key = Keyboard.keyPressed();
+            let exit = movePlayer();
+            do chase();
+         }
+         if (key = 81)  { let exit = true; }
+         if (key = 131) { let direction = 1; } 
+         if (key = 133) { let direction = 2; } 
+         if (key = 130) { let direction = 3; } 
+         if (key = 132) { let direction = 4; }   
+
+         while (~(key = 0)) {
+            let key = Keyboard.keyPressed();
+            let exit = movePlayer();
+            do player.incSize();
+         }
+     } 
+     return;
+   }
+}
+
+
+

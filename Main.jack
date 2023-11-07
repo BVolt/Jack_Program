@@ -1,0 +1,10 @@
+// Simple Main to declare game 
+class Main {
+    function void main(){
+        var Survive newGame;
+        let newGame = Survive.new();
+        do newGame.run();
+        do newGame.dispose();
+        return;
+    }
+}
